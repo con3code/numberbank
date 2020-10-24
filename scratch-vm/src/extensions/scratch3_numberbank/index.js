@@ -37,10 +37,15 @@ let cardSha256 = '';
 let uniSha256 = '';
 let inoutFlag = false;
 let availableFlag = false;
-let intervalMs = 50;
+let intervalMsPut = 1500;
+let intervalMsSet = 1000;
+let intervalMsGet = 1000;
+let intervalMsRep = 1000;
+let intervalMsAvl = 100;
 const projectName ='numberbank-';
-const extVersion = "NumberBank 0.7.3";
+const extVersion = "NumberBank 0.7.5";
 
+/** Firebase Configuration */
 let firebaseConfig = {
     apiKey: "AIzaSyA1iKV2IluAbBaO0A8yrKbNi7odxE1AaX8",
     authDomain: ".firebaseapp.com",
@@ -132,7 +137,7 @@ function hexString(textStr) {
 }
 
 
-/** Project Id for nb*/
+/** Project Id for nb only for con3office */
 const prjtId = "68d06";
 
 /**
@@ -153,7 +158,7 @@ class Scratch3Numberbank {
         console.log(extVersion);
 
 
-        /** Firebase initilizing */
+        /** Firebase initilizing only for con3office */
         let fb_id = projectName.concat(prjtId);
         firebaseConfig.projectId = fb_id;
         let fb_dm = fb_id.concat(firebaseConfig.authDomain);
@@ -162,6 +167,8 @@ class Scratch3Numberbank {
         firebaseConfig.storageBucket = fb_sb;
         let fb_ul = 'https://'.concat(fb_id).concat(firebaseConfig.databaseURL);
         firebaseConfig.databaseURL = fb_ul;
+        /** Firebase initilizing only for con3office */
+
 
         firebase.initializeApp(firebaseConfig);
 
@@ -365,6 +372,39 @@ class Scratch3Numberbank {
                     items: 'getDynamicMenuItems'
                 }
             }
+            /*
+            ,
+            translation_map: {
+                'ja': {
+                    'numberbank.NumberBank': 'ナンバーバンク',
+                    'numberbank.argments.bank': 'バンク',
+                    'numberbank.argments.card': 'カード',
+                    'numberbank.argments.key': 'キー',
+                    'numberbank.putNum': '[BANK]の[CARD]の数字を[NUM]にする',
+                    'numberbank.setNum': '[VAL]を[BANK]の[CARD]の数字にする',
+                    'numberbank.inoutDone': '読み書き完了',
+                    'numberbank.getNum': '[BANK]の[CARD]を読む',
+                    'numberbank.repNum': 'クラウド数字',
+                    'numberbank.repCloudNum': '[BANK]の[CARD]の数字',
+                    'numberbank.boolAvl': '[BANK]の[CARD]がある',
+                    'numberbank.setMaster': 'マスター[KEY]をセット'
+                },
+                'ja-Hira': {
+                    'numberbank.NumberBank': 'なんばーばんく',
+                    'numberbank.argments.bank': 'ばんく',
+                    'numberbank.argments.card': 'かーど',
+                    'numberbank.argments.key': 'きー',
+                    'numberbank.putNum': '[BANK]の[CARD]のすうじを[NUM]にする',
+                    'numberbank.setNum': '[VAL]を[BANK]の[CARD]のすうじにする',
+                    'numberbank.inoutDone': 'よみかきかんりょう',
+                    'numberbank.getNum': '[BANK]の[CARD]をよむ',
+                    'numberbank.repNum': 'クラウドすうじ',
+                    'numberbank.repCloudNum': '[BANK]の[CARD]のすうじ',
+                    'numberbank.boolAvl': '[BANK]の[CARD]がある',
+                    'numberbank.setMaster': 'ますたー[KEY]をセット'
+                }
+            }
+            */
         };
     }
     
@@ -461,7 +501,7 @@ class Scratch3Numberbank {
 
         }
 
-        return ioWaiter(intervalMs);
+        return ioWaiter(intervalMsPut);
 
     }
 
@@ -558,7 +598,7 @@ class Scratch3Numberbank {
 
         }
 
-        return ioWaiter(intervalMs);
+        return ioWaiter(intervalMsSet);
 
     }
 
@@ -659,7 +699,7 @@ class Scratch3Numberbank {
 
         }
 
-        return ioWaiter(intervalMs);
+        return ioWaiter(intervalMsGet);
 
     }
 
@@ -760,7 +800,7 @@ class Scratch3Numberbank {
 
         }
 
-        return reportNumWaiter(intervalMs);
+        return reportNumWaiter(intervalMsRep);
 
     }
 
@@ -836,7 +876,7 @@ class Scratch3Numberbank {
 
         }
 
-        return availableWaiter(intervalMs);
+        return availableWaiter(intervalMsAvl);
 
     }
 
@@ -870,7 +910,7 @@ class Scratch3Numberbank {
 
     setupTranslations () {
         const localeSetup = formatMessage.setup();
-        const extTranslations = {
+        const extensionTranslations = {
             'ja': {
                 'numberbank.NumberBank': 'ナンバーバンク',
                 'numberbank.argments.bank': 'バンク',
@@ -900,11 +940,12 @@ class Scratch3Numberbank {
                 'numberbank.setMaster': 'ますたー[KEY]をセット'
             }
         };
-        for (const locale in extTranslations) {
+
+        for (const locale in extensionTranslations) {
             if (!localeSetup.translations[locale]) {
                 localeSetup.translations[locale] = {};
             }
-            Object.assign(localeSetup.translations[locale], extTranslations[locale]);
+            Object.assign(localeSetup.translations[locale], extensionTranslations[locale]);
         }
     }
 
