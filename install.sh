@@ -2,7 +2,7 @@
 
 LF=$(printf '\\\012_')
 LF=${LF%_}
-EXTENSION_NAME="NumberBank 0.7.5"
+EXTENSION_NAME='NumberBank 0.7.5'
 EXTENSION_ID=numberbank
 COLLABORATOR=con3office
 EXTENSION_DESCRIPTION="Store Numbers to Cloud."
@@ -22,7 +22,7 @@ cp ${EXTENSION_ID}/scratch-gui/src/lib/libraries/extensions/${EXTENSION_ID}/${EX
 mv src/lib/libraries/extensions/index.jsx src/lib/libraries/extensions/index.jsx_orig
 DESCRIPTION="\
     {${LF}\
-        name: '${EXTENSION_NAME}',${LF}\
+        name: ${EXTENSION_NAME},${LF}\
         extensionId: '${EXTENSION_ID}',${LF}\
         collaborator: '${COLLABORATOR}',${LF}\
         iconURL: ${EXTENSION_ID}IconURL,${LF}\
