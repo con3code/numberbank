@@ -43,7 +43,7 @@ let intervalMsGet = 1000;
 let intervalMsRep = 1000;
 let intervalMsAvl = 100;
 const projectName ='numberbank-';
-const extVersion = "NumberBank 0.7.5";
+const extVersion = "NumberBank 0.7.6";
 
 /** Firebase Configuration */
 let firebaseConfig = {
@@ -609,6 +609,8 @@ class Scratch3Numberbank {
 
     
     getNum (args) {
+
+        cloudNum = '';
 
         if (masterSha256 == ''){ return; }
 
