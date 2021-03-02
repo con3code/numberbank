@@ -4,3 +4,27 @@ Scratch3.0からクラウドに数字を保存できるクラウド連想配列�
 <img src="https://www.con3.com/files/numberbank_briefpaper.jpg">
 
 ---
+
+
+## How
+
+1. Setup LLK/scratch-gui on your computer.
+
+    ```
+    % git clone git@github.com:LLK/scratch-gui.git
+    % cd scratch-gui
+    % npm install
+    ```
+
+2. In scratch-gui folder, clone scratch-gui-backpack. You will have numberbank folder under scratch-gui.
+
+    ```
+    % git clone https://github.com/con3office/numberbank.git
+    ```
+
+3. Run the install script.
+
+    ```
+    % sh numberbank/install.sh
+    ```
+
