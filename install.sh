@@ -8,7 +8,7 @@ COLLABORATOR=con3office
 EXTENSION_DESCRIPTION="Store Numbers to Cloud."
 
 cd node_modules/scratch-vm
-yarn add firebase
+npm install --save firebase
 cd ../../
 
 mkdir -p node_modules/scratch-vm/src/extensions/scratch3_${EXTENSION_ID}
