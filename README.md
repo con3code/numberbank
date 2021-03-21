@@ -16,7 +16,7 @@ Scratch3.0からクラウドに数字を保存できるクラウド連想配列�
     % npm install
     ```
 
-2. In scratch-gui folder, clone scratch-gui-backpack. You will have numberbank folder under scratch-gui.
+2. In scratch-gui folder, clone numberbank. You will have numberbank folder under scratch-gui.
 
     ```
     % git clone https://github.com/con3office/numberbank.git
