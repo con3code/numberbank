@@ -15,7 +15,7 @@ const Cast = require('../../util/cast');
 const log = require('../../util/log');
 const Variable = require('../../engine/variable');
 const formatMessage = require('format-message');
-const firebase = require("firebase");
+const firebase = require("firebase/app");
 require("firebase/firestore");
 
 
@@ -43,7 +43,7 @@ let intervalMsGet = 1000;
 let intervalMsRep = 1000;
 let intervalMsAvl = 100;
 const projectName ='numberbank-';
-const extVersion = "NumberBank 0.7.6";
+const extVersion = "NumberBank 0.7.7";
 
 /** Firebase Configuration */
 let firebaseConfig = {
@@ -170,9 +170,9 @@ class Scratch3Numberbank {
         /** Firebase initilizing only for con3office */
 
 
-        firebase.initializeApp(firebaseConfig);
+        firebase.default.initializeApp(firebaseConfig);
 
-        firestoreDb = firebase.firestore();
+        firestoreDb = firebase.default.firestore();
         masterDb = firestoreDb.collection("master");
         bankDb = firestoreDb.collection("bank");
         cardDb = firestoreDb.collection("card");

@@ -2,13 +2,13 @@
 
 LF=$(printf '\\\012_')
 LF=${LF%_}
-EXTENSION_NAME='NumberBank 0.7.6'
+EXTENSION_NAME='NumberBank 0.7.7'
 EXTENSION_ID=numberbank
 COLLABORATOR=con3office
 EXTENSION_DESCRIPTION="Store Numbers to Cloud."
 
 cd node_modules/scratch-vm
-npm install --save firebase
+yarn add firebase
 cd ../../
 
 mkdir -p node_modules/scratch-vm/src/extensions/scratch3_${EXTENSION_ID}
