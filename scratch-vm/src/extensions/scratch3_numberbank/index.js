@@ -43,7 +43,7 @@ let intervalMsGet = 1000;
 let intervalMsRep = 1000;
 let intervalMsAvl = 100;
 const projectName ='numberbank-';
-const extVersion = "NumberBank 0.7.7";
+const extVersion = "NumberBank 0.8.0";
 
 /** Firebase Configuration */
 let firebaseConfig = {
@@ -170,7 +170,11 @@ class Scratch3Numberbank {
         /** Firebase initilizing only for con3office */
 
 
-        firebase.default.initializeApp(firebaseConfig);
+        try{
+            firebase.initializeApp(firebaseConfig);
+        } catch (e) {
+            firebase.default.initializeApp(firebaseConfig);
+        }
 
         firestoreDb = firebase.default.firestore();
         masterDb = firestoreDb.collection("master");
@@ -464,7 +468,9 @@ class Scratch3Numberbank {
                 //console.log("masterSha256: " + masterSha256);
 
                 masterDb.doc(masterSha256).get().then(function(mkey) {
+                    
                     if (mkey.exists) {
+    
                         const now = Date.now();
                         cardDb.doc(uniSha256).set({
                             number: settingNum,
@@ -902,6 +908,28 @@ class Scratch3Numberbank {
             //console.log("MasterKey:", masterKey);
             //console.log("masterSha256:", masterSha256);
             console.log("MasterKey setted!");
+
+            masterDb.doc(masterSha256).get().then(function(mkey) {
+
+                if (mkey.exists) {
+    
+                    let data = mkey.data();
+                    intervalMsPut = data.intervalMsPut;
+                    intervalMsSet = data.intervalMsSet;
+                    intervalMsGet = data.intervalMsGet;
+                    intervalMsRep = data.intervalMsRep;
+                    intervalMsAvl = data.intervalMsAvl;
+    
+                } else {
+                    // doc.data() will be undefined in this case
+                    console.log("No MasterKey!");
+                }
+    
+            })
+            .catch(function(error) {
+                console.log("Error getting document:", error);
+            });
+    
         })
         .catch(function(error) {
             console.log("Error setting MasterKey:", error);
@@ -917,7 +945,7 @@ class Scratch3Numberbank {
                 'numberbank.NumberBank': 'ナンバーバンク',
                 'numberbank.argments.bank': 'バンク',
                 'numberbank.argments.card': 'カード',
-                'numberbank.argments.key': 'キー',
+                'numberbank.argments.key': 'key',
                 'numberbank.putNum': '[BANK]の[CARD]の数字を[NUM]にする',
                 'numberbank.setNum': '[VAL]を[BANK]の[CARD]の数字にする',
                 'numberbank.inoutDone': '読み書き完了',
@@ -931,7 +959,7 @@ class Scratch3Numberbank {
                 'numberbank.NumberBank': 'なんばーばんく',
                 'numberbank.argments.bank': 'ばんく',
                 'numberbank.argments.card': 'かーど',
-                'numberbank.argments.key': 'きー',
+                'numberbank.argments.key': 'key',
                 'numberbank.putNum': '[BANK]の[CARD]のすうじを[NUM]にする',
                 'numberbank.setNum': '[VAL]を[BANK]の[CARD]のすうじにする',
                 'numberbank.inoutDone': 'よみかきかんりょう',
