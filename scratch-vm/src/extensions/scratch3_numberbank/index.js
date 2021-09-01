@@ -43,7 +43,7 @@ let intervalMsGet = 1000;
 let intervalMsRep = 1000;
 let intervalMsAvl = 100;
 const projectName ='numberbank-';
-const extVersion = "NumberBank 0.8.0";
+const extVersion = "NumberBank 0.8.1";
 
 /** Firebase Configuration */
 let firebaseConfig = {
@@ -172,11 +172,12 @@ class Scratch3Numberbank {
 
         try{
             firebase.initializeApp(firebaseConfig);
+            firestoreDb = firebase.firestore();
         } catch (e) {
             firebase.default.initializeApp(firebaseConfig);
+            firestoreDb = firebase.default.firestore();
         }
 
-        firestoreDb = firebase.default.firestore();
         masterDb = firestoreDb.collection("master");
         bankDb = firestoreDb.collection("bank");
         cardDb = firestoreDb.collection("card");
