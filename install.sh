@@ -2,7 +2,7 @@
 
 LF=$(printf '\\\012_')
 LF=${LF%_}
-EXTENSION_NAME='NumberBank 0.7.7'
+EXTENSION_NAME='NumberBank 0.8.0'
 EXTENSION_ID=numberbank
 COLLABORATOR=con3office
 EXTENSION_DESCRIPTION="Store Numbers to Cloud."
