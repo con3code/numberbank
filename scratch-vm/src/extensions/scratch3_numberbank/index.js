@@ -159,6 +159,7 @@ var db;
 
 // Variables
 let masterKey = '';
+let masterSetted = '';
 let bankName = '';
 let bankKey = '';
 let cardKey = '';
@@ -285,9 +286,9 @@ function crypt_decode(cryptedConfigData, decodedConfigData) {
 
     switch (cryptedConfigData.cloudType) {
         case 'firestore':
-            // console.log('switch to Firebase!');
+            console.log('switch to Firebase!');
 
-            crypto.subtle.digest('SHA-256', encoder.encode(masterKey))
+            crypto.subtle.digest('SHA-256', encoder.encode(masterSetted))
                 .then((masterStr) => {
 
                     return crypto.subtle.importKey('raw', masterStr, 'AES-CTR', false, ['encrypt', 'decrypt']);
@@ -300,7 +301,7 @@ function crypt_decode(cryptedConfigData, decodedConfigData) {
                     return crypto.subtle.decrypt({ name: 'AES-CTR', counter: cccCheck, length: 64 }, ckey, de_get(cryptedConfigData.apiKey));
                 })
                 .then((decodedData) => {
-                    // console.log('decodedConfigData.apiKey:', de_disp(decodedData));
+                    console.log('decodedConfigData.apiKey:', de_disp(decodedData));
                     decodedConfigData.apiKey = de_disp(decodedData);
 
                     // authDomain
@@ -917,7 +918,7 @@ class Scratch3Numberbank {
 
 
     setMaster(args) {
-        let masterSetted = '';
+        masterSetted = '';
 
         if (args.KEY == '') { return masterSetted; }
 
@@ -976,6 +977,7 @@ class Scratch3Numberbank {
 
             }).then(() => {
                 inoutFlag = true;
+                console.log('firebaseConfig:', firebaseConfig);
 
                 // Initialize Firebase
 
