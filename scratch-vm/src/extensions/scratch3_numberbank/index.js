@@ -286,7 +286,7 @@ function crypt_decode(cryptedConfigData, decodedConfigData) {
 
     switch (cryptedConfigData.cloudType) {
         case 'firestore':
-            console.log('switch to Firebase!');
+            // console.log('switch to Firebase!');
 
             crypto.subtle.digest('SHA-256', encoder.encode(masterSetted))
                 .then((masterStr) => {
@@ -301,60 +301,51 @@ function crypt_decode(cryptedConfigData, decodedConfigData) {
                     return crypto.subtle.decrypt({ name: 'AES-CTR', counter: cccCheck, length: 64 }, ckey, de_get(cryptedConfigData.apiKey));
                 })
                 .then((decodedData) => {
-                    console.log('decodedConfigData.apiKey:', de_disp(decodedData));
                     decodedConfigData.apiKey = de_disp(decodedData);
 
                     // authDomain
                     return crypto.subtle.decrypt({ name: 'AES-CTR', counter: cccCheck, length: 64 }, ckey, de_get(cryptedConfigData.authDomain));
                 })
                 .then((decodedData) => {
-                    // console.log('decodedConfigData.authDomain:', de_disp(decodedData));
                     decodedConfigData.authDomain = de_disp(decodedData);
 
                     // databaseURL
                     return crypto.subtle.decrypt({ name: 'AES-CTR', counter: cccCheck, length: 64 }, ckey, de_get(cryptedConfigData.databaseURL));
                 })
                 .then((decodedData) => {
-                    // console.log('decodedConfigData.databaseURL:', de_disp(decodedData));
                     decodedConfigData.databaseURL = de_disp(decodedData);
 
                     // projectId
                     return crypto.subtle.decrypt({ name: 'AES-CTR', counter: cccCheck, length: 64 }, ckey, de_get(cryptedConfigData.projectId));
                 })
                 .then((decodedData) => {
-                    // console.log('decodedConfigData.projectId:', de_disp(decodedData));
                     decodedConfigData.projectId = de_disp(decodedData);
 
                     // storageBucket
                     return crypto.subtle.decrypt({ name: 'AES-CTR', counter: cccCheck, length: 64 }, ckey, de_get(cryptedConfigData.storageBucket));
                 })
                 .then((decodedData) => {
-                    // console.log('decodedConfigData.storageBucket:', de_disp(decodedData));
                     decodedConfigData.storageBucket = de_disp(decodedData);
 
                     // messagingSenderId
                     return crypto.subtle.decrypt({ name: 'AES-CTR', counter: cccCheck, length: 64 }, ckey, de_get(cryptedConfigData.messagingSenderId));
                 })
                 .then((decodedData) => {
-                    // console.log('decodedConfigData.messagingSenderId:', de_disp(decodedData));
                     decodedConfigData.messagingSenderId = de_disp(decodedData);
 
                     // appId
                     return crypto.subtle.decrypt({ name: 'AES-CTR', counter: cccCheck, length: 64 }, ckey, de_get(cryptedConfigData.appId));
                 })
                 .then((decodedData) => {
-                    // console.log('decodedConfigData.appId:', de_disp(decodedData));
                     decodedConfigData.appId = de_disp(decodedData);
 
                     // measurementId
                     return crypto.subtle.decrypt({ name: 'AES-CTR', counter: cccCheck, length: 64 }, ckey, de_get(cryptedConfigData.measurementId));
                 })
                 .then((decodedData) => {
-                    // console.log('decodedConfigData.measurementId:', de_disp(decodedData));
                     decodedConfigData.measurementId = de_disp(decodedData);
 
                     inoutFlag = false;
-                    // console.log('inoutFlag(decode end):', inoutFlag);
                     return decodedConfigData;
 
                 })
@@ -458,11 +449,9 @@ class Scratch3Numberbank {
         cardKey = args.CARD;
 
         uniKey = bankKey.trim().concat(cardKey.trim());
-        //console.log("uniKey: " + uniKey);    
 
         if (args.NUM != '' && args.NUM != undefined) {
             settingNum = args.NUM;
-            //console.log("settingNum: " + settingNum);    
         }
 
         if (!crypto || !crypto.subtle) {
@@ -474,29 +463,24 @@ class Scratch3Numberbank {
             crypto.subtle.digest('SHA-256', encoder.encode(bankKey))
                 .then(bankStr => {
                     bankSha256 = hexString(bankStr);
-                    //console.log("bankSha256: " + bankSha256);
 
                     //cardKey
                     return crypto.subtle.digest('SHA-256', encoder.encode(cardKey));
                 })
                 .then(cardStr => {
                     cardSha256 = hexString(cardStr);
-                    //console.log("cardSha256: " + cardSha256);
 
                     //uniKey
                     return crypto.subtle.digest('SHA-256', encoder.encode(uniKey));
                 })
                 .then(uniStr => {
                     uniSha256 = hexString(uniStr);
-                    //console.log("uniSha256: " + uniSha256);
 
                     return sleep(1);
                 })
                 .then(() => {
-                    //console.log("masterSha256: " + masterSha256);
 
                     if (masterSha256 != '' && masterSha256 != undefined) {
-                        // console.log("NumberBank put 00");
 
                         const now = Date.now();
                         setDoc(doc(db, 'card', uniSha256), {
@@ -507,14 +491,12 @@ class Scratch3Numberbank {
                             time_stamp: now
                         })
                             .then(() => {
-                                // console.log("NumberBank put 01");
                                 return setDoc(doc(db, 'bank', bankSha256), {
                                     bank_name: bankName,
                                     time_stamp: now
                                 });
                             })
                             .then(() => {
-                                // console.log("NumberBank put 02");
                                 inoutFlag = false;
                             })
                             .catch(function (error) {
@@ -527,13 +509,9 @@ class Scratch3Numberbank {
                         inoutFlag = false;
                     }
 
-                    // console.log("NumberBank put 03");
-
                 });
 
         }
-
-        // console.log("NumberBank put ioWaiter");
 
         return ioWaiter(interval.MsPut);
 
@@ -565,39 +543,31 @@ class Scratch3Numberbank {
             crypto.subtle.digest('SHA-256', encoder.encode(bankKey))
                 .then(bankStr => {
                     bankSha256 = hexString(bankStr);
-                    //console.log("bankSha256: " + bankSha256);    
 
                     //cardKey
                     return crypto.subtle.digest('SHA-256', encoder.encode(cardKey));
                 })
                 .then(cardStr => {
                     cardSha256 = hexString(cardStr);
-                    //console.log("cardSha256: " + cardSha256);
 
                     //uniKey
                     return crypto.subtle.digest('SHA-256', encoder.encode(uniKey));
                 })
                 .then(uniStr => {
                     uniSha256 = hexString(uniStr);
-                    //console.log("uniSha256: " + uniSha256);
 
                     return sleep(1);
                 })
                 .then(() => {
-                    //console.log("masterSha256: " + masterSha256);
 
                     if (masterSha256 != '' && masterSha256 != undefined) {
 
                         getDoc(doc(db, 'card', uniSha256)).then(function (ckey) {
-                            // console.log("NumberBank set 00");
 
                             if (ckey.exists()) {
-                                // console.log("NumberBank set 01");
 
-                                // cardDb.doc(uniSha256).get()
                                 getDoc(doc(db, 'card', uniSha256))
                                     .then((doc) => {
-                                        // console.log("NumberBank set 02");
                                         let data = doc.data();
                                         variable.value = data.number;
                                     })
@@ -620,18 +590,13 @@ class Scratch3Numberbank {
                         });
 
                     } else {
-                        // doc.data() will be undefined in this case
                         console.log("No MasterKey!");
                         inoutFlag = false;
                     }
 
-                    // console.log("NumberBank set 03");
-
                 });
 
         }
-
-        // console.log("NumberBank set ioWaiter");
 
         return ioWaiter(interval.MsSet);
 
@@ -651,9 +616,6 @@ class Scratch3Numberbank {
 
         if (args.BANK == '' || args.CARD == '') { return; }
 
-        // console.log('args.BANK:', args.BANK);
-        // console.log('args.CARD:', args.CARD);
-
         if (inoutFlag) { return; }
         inoutFlag = true;
 
@@ -671,44 +633,35 @@ class Scratch3Numberbank {
             crypto.subtle.digest('SHA-256', encoder.encode(bankKey))
                 .then(bankStr => {
                     bankSha256 = hexString(bankStr);
-                    //console.log("bankSha256: " + bankSha256);
 
                     //cardKey
                     return crypto.subtle.digest('SHA-256', encoder.encode(cardKey));
                 })
                 .then(cardStr => {
                     cardSha256 = hexString(cardStr);
-                    //console.log("cardSha256: " + cardSha256);
 
                     //uniKey
                     return crypto.subtle.digest('SHA-256', encoder.encode(uniKey));
                 })
                 .then(uniStr => {
                     uniSha256 = hexString(uniStr);
-                    //console.log("uniSha256: " + uniSha256);
 
                     return sleep(1);
                 })
                 .then(() => {
-                    // console.log("masterSha256: " + masterSha256);
 
                     if (masterSha256 != '' && masterSha256 != undefined) {
 
                         getDoc(doc(db, 'card', uniSha256)).then(function (ckey) {
-                            // console.log("NumberBank get 00");
 
                             if (ckey.exists()) {
-                                // console.log("NumberBank get 01");
 
                                 getDoc(doc(db, 'card', uniSha256))
                                     .then((doc) => {
-                                        // console.log("NumberBank get 02");
                                         let data = doc.data();
                                         cloudNum = data.number;
-                                        // console.log('cloudNum:', cloudNum);
                                     })
                                     .then(() => {
-                                        // console.log("NumberBank get 03");
                                         inoutFlag = false;
                                     })
                                     .catch(function (error) {
@@ -716,7 +669,6 @@ class Scratch3Numberbank {
                                     });
 
                             } else {
-                                // console.log("NumberBank get 04");
                                 // console.log("No Card!");
                                 cloudNum = '';
                                 inoutFlag = false;
@@ -728,18 +680,13 @@ class Scratch3Numberbank {
                         });
 
                     } else {
-                        // doc.data() will be undefined in this case
                         console.log("No MasterKey!");
                         inoutFlag = false;
                     }
 
-                    // console.log("NumberBank get 05");
-
                 });
 
         }
-
-        // console.log("NumberBank get ioWaiter");
 
         return ioWaiter(interval.MsGet);
 
@@ -774,38 +721,31 @@ class Scratch3Numberbank {
             crypto.subtle.digest('SHA-256', encoder.encode(bankKey))
                 .then(bankStr => {
                     bankSha256 = hexString(bankStr);
-                    //console.log("bankSha256: " + bankSha256);
 
                     //cardKey
                     return crypto.subtle.digest('SHA-256', encoder.encode(cardKey));
                 })
                 .then(cardStr => {
                     cardSha256 = hexString(cardStr);
-                    //console.log("cardSha256: " + cardSha256);
 
                     //uniKey
                     return crypto.subtle.digest('SHA-256', encoder.encode(uniKey));
                 })
                 .then(uniStr => {
                     uniSha256 = hexString(uniStr);
-                    //console.log("uniSha256: " + uniSha256);
 
                     return sleep(1);
                 })
                 .then(() => {
-                    //console.log("masterSha256: " + masterSha256);
 
                     if (masterSha256 != '' && masterSha256 != undefined) {
 
                         getDoc(doc(db, 'card', uniSha256)).then(function (ckey) {
-                            // console.log("NumberBank rep 00");
 
                             if (ckey.exists()) {
-                                // console.log("NumberBank rep 01");
 
                                 getDoc(doc(db, 'card', uniSha256))
                                     .then((doc) => {
-                                        // console.log("NumberBank rep 02");
                                         let data = doc.data();
                                         cloudNum = data.number;
                                     })
@@ -828,18 +768,13 @@ class Scratch3Numberbank {
                         });
 
                     } else {
-                        // doc.data() will be undefined in this case
                         console.log("No MasterKey!");
                         inoutFlag = false;
                     }
 
-                    // console.log("NumberBank rep 03");
-
                 });
 
         }
-
-        // console.log("NumberBank rep ioWaiter");
 
         return reportNumWaiter(interval.MsRep);
 
@@ -869,17 +804,14 @@ class Scratch3Numberbank {
             crypto.subtle.digest('SHA-256', encoder.encode(uniKey))
                 .then(uniStr => {
                     uniSha256 = hexString(uniStr);
-                    // console.log("uniSha256: " + uniSha256);
 
                     return sleep(1);
                 })
                 .then(() => {
-                    // console.log("masterSha256: " + masterSha256);
 
                     if (masterSha256 != '' && masterSha256 != undefined) {
 
                         getDoc(doc(db, 'card', uniSha256)).then(function (ckey) {
-                            // console.log("NumberBank avl 00");
 
                             if (ckey.exists()) {
                                 // console.log("NumberBank avl YES");
@@ -898,19 +830,14 @@ class Scratch3Numberbank {
                         });
 
                     } else {
-                        // doc.data() will be undefined in this case
                         console.log("No MasterKey!");
                         inoutFlag = false;
                         availableFlag = false;
                     }
 
-                    // console.log("NumberBank avl 03");
-
                 })
 
         }
-
-        // console.log("NumberBank avl ioWaiter");
 
         return availableWaiter(interval.MsAvl);
 
@@ -977,7 +904,6 @@ class Scratch3Numberbank {
 
             }).then(() => {
                 inoutFlag = true;
-                console.log('firebaseConfig:', firebaseConfig);
 
                 // Initialize Firebase
 
