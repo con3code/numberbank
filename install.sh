@@ -2,12 +2,12 @@
 
 LF=$(printf '\\\012_')
 LF=${LF%_}
-EXTENSION_NAME='NumberBank1.0'
+EXTENSION_NAME='NumberBank1.1'
 EXTENSION_ID=numberbank
 COLLABORATOR=con3office
 EXTENSION_DESCRIPTION="Store Numbers to Cloud."
 
-npm install firebase@9.7.0 --legacy-peer-deps
+npm install firebase@10.4.0 --legacy-peer-deps
 npm install @peculiar/webcrypto --legacy-peer-deps
 
 mkdir -p node_modules/scratch-vm/src/extensions/scratch3_${EXTENSION_ID}
