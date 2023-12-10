@@ -11,7 +11,7 @@ This is an extension that enables cloud associative arrays to save values from S
 1. Setup scratchfoundation/scratch-gui on your computer.
 
     ```
-    % git clone git@github.com:scratchfoundation/scratch-gui.git
+    % git clone https://github.com/scratchfoundation/scratch-gui.git
     % cd scratch-gui
     % npm install
     ```
