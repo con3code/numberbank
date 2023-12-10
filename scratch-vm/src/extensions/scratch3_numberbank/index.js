@@ -1,7 +1,7 @@
 /*
 
-    NumberBank1.1
-    20231207 - 1.1(001) 
+    NumberBank 2.0
+    20231210 - ver2.0(2001) 
     Scratch3.0 Extension
 
     Web:
@@ -12,13 +12,11 @@
 
 const BlockType = require('../../extension-support/block-type');
 const ArgumentType = require('../../extension-support/argument-type');
-const Cast = require('../../util/cast');
-const log = require('../../util/log');
-
 const formatMessage = require('format-message');
-const Variable = require('../../engine/variable');
 const { Crypto } = require("@peculiar/webcrypto");
 const crypto = new Crypto();
+
+const Variable = require('../../engine/variable');
 
 const { initializeApp, getApps, deleteApp } = require('firebase/app');
 const firestore = require('firebase/firestore');
@@ -29,7 +27,7 @@ const encoder = new TextEncoder();
 const deoder_utf8 = new TextDecoder('utf-8');
 
 const EXTENSION_ID = 'numberbank';
-const extVersion = "NumberBank1.1";
+const extVersion = "NumberBank 2.0";
 
 
 /**
@@ -101,6 +99,14 @@ class Scratch3Numberbank {
          */
         this.runtime = runtime;
 
+        this.firstInstall = true;
+
+        //updated
+        this.whenUpdatedCallCountMap = new Map();
+        this.LisningBankCard_flag = false;
+        //onSnapshot
+        this.unsubscribe = () => {};
+
         console.log(extVersion);
 
         if (runtime.formatMessage) {
@@ -109,6 +115,24 @@ class Scratch3Numberbank {
         }
     }
 
+
+    /**
+     * Create data for a menu in scratch-blocks format, consisting of an array
+     * of objects with text and value properties. The text is a translated
+     * string, and the value is one-indexed.
+     * @param {object[]} info - An array of info objects each having a name
+     *   property.
+     * @return {array} - An array of objects with text and value properties.
+     * @private
+     */
+    _buildMenu (info) {
+        return info.map((entry, index) => {
+            const obj = {};
+            obj.text = entry.name;
+            obj.value = entry.value || String(index + 1);
+            return obj;
+        });
+    }
 
 
     putNum(args) {
@@ -624,6 +648,183 @@ class Scratch3Numberbank {
     }
 
 
+    lisningNum(args, util) {
+        if (masterSha256 == '') { return false; }
+        if (args.BANK == '' || args.CARD == '') { return false; }
+
+        const state = args.LISNING_STATE;
+
+        if(state === Lisning.ON) {
+
+            //onSnapshotに登録
+
+            return new Promise((resolve, reject) => {
+        
+                bankKey = bankName = new String(args.BANK);
+                cardKey = new String(args.CARD);
+    
+                uniKey = bankKey.trim().concat(cardKey.trim());
+    
+                if (!crypto || !crypto.subtle) {
+                    reject("crypto.subtle is not supported.");
+                }
+    
+                if (bankKey != '' && bankKey != undefined) {
+                    crypto.subtle.digest('SHA-256', encoder.encode(bankKey))
+                        .then(bankStr => {
+                            bankSha256 = Lisning.BANK = hexString(bankStr);
+    
+                            return crypto.subtle.digest('SHA-256', encoder.encode(cardKey));
+                        })
+                        .then(cardStr => {
+                            cardSha256 = Lisning.CARD = hexString(cardStr);
+    
+                            return crypto.subtle.digest('SHA-256', encoder.encode(uniKey));
+                        })
+                        .then(uniStr => {
+                            uniSha256 = Lisning.UNI = hexString(uniStr);
+
+                            if (masterSha256 != '' && masterSha256 != undefined) {
+    
+                                this.unsubscribe();
+                                Lisning.FIRST = true;
+                                this.unsubscribe = onSnapshot(doc(db, 'card', uniSha256), (doc) => {
+                                    this.lisningState();
+                                    //console.log("Current data: ", doc.data());
+                                },
+                                (err) => {
+                                    console.log("onSnapshot Error:",err);
+                                
+                                });
+
+                                console.log("= Lisning ON =");
+
+                                resolve(state);
+                                                                    
+                            } else {
+                                console.log("No MasterKey!");
+                                resolve();  // MasterKeyがない場合
+                            }
+    
+                        }).catch(error => {
+                            console.error("Error: ", error);
+                            reject(error);
+                        });
+
+                } else {
+                    resolve(state);
+                }
+            });
+
+
+        } else {
+
+            console.log("= Lisning OFF =");
+
+            //onSnapshotを解除
+            this.unsubscribe();
+         
+        }
+
+        return state;
+    }
+
+
+    snapshotCalled() {
+
+        for (let [blockId, callCount] of this.whenUpdatedCallCountMap.entries()) {
+            callCount += 1;
+            this.whenUpdatedCallCountMap.set(blockId, callCount);
+        }
+
+    }
+
+
+    //onSnapshot設定時にトリガーしてしまう初回を回避
+    lisningState () {
+        const first = Lisning.FIRST;
+        if (first) {
+            Lisning.FIRST = false;
+            this.LisningBankCard_flag = false;
+        } else {
+            this.LisningBankCard_flag = true;
+            this.snapshotCalled();
+        }
+    }
+        
+
+    static get Lisning () {
+        return Lisning;
+    }
+    
+
+    whenUpdatedCalled(blockId) {
+        //console.log('Called:', instanceId);
+        let callCount = this.whenUpdatedCallCountMap.get(blockId) || 0;
+
+        if (this.LisningBankCard_flag) {
+            if(callCount > 0){
+                callCount -= 1;
+                this.whenUpdatedCallCountMap.set(blockId, callCount);
+            } 
+            //console.log('checkCalled', Array.from(this.whenUpdatedCallCountMap));
+            this.checkAllWhenUpdatedCalled();
+        } else {
+            this.whenUpdatedCallCountMap.set(blockId, callCount);
+        }
+
+    }
+
+    
+    checkAllWhenUpdatedCalled() {
+        const allCalled = Array.from(this.whenUpdatedCallCountMap.values()).every(count => count === 0);
+        //console.log('checkCalled', Array.from(this.whenUpdatedCallCountMap));
+
+        if (allCalled) {
+            this.LisningBankCard_flag = false;
+        } 
+    }
+
+
+    whenUpdated(args, util) {
+        const blockId = util.thread.topBlock;
+        //console.log('util:', util.thread.topBlock);
+
+        let callCount = this.whenUpdatedCallCountMap.get(blockId) || 0;
+
+        this.whenUpdatedCalled(blockId);
+
+        return callCount > 0;
+    }
+
+
+    /**
+     * An array of info on video state options for the "lisning" block.
+     * @type {object[]}
+     * @param {string} name - the translatable name to display in the state menu
+     * @param {string} value - the serializable value stored in the block
+     */
+    get LISNING_INFO () {
+        return [
+            {
+                name: formatMessage({
+                    id: 'lisning.off',
+                    default: 'off',
+                    description: 'Option for the "lisning [STATE]" block'
+                }),
+                value: Lisning.OFF
+            },
+            {
+                name: formatMessage({
+                    id: 'lisning.on',
+                    default: 'on',
+                    description: 'Option for the "lisning [STATE]" block'
+                }),
+                value: Lisning.ON
+            }
+        ];
+    }
+
 
 
     /**
@@ -638,15 +839,17 @@ class Scratch3Numberbank {
             menuIconURI: menuIconURI,
             blockIconURI: blockIconURI,
             showStatusButton: false,
+            color1: '#78A0B4',
+            color2: '#78A0B4',
             blocks: [
                 {
                     opcode: 'putNum',
-                    blockType: BlockType.COMMAND,
                     text: formatMessage({
                         id: 'numberbank.putNum',
-                        default: 'put[NUM]to[CARD]of[BANK]',
-                        description: 'put number to Firebase'
+                        default: 'put [VAL] to [CARD]of[BANK]',
+                        description: 'put value to Firebase'
                     }),
+                    blockType: BlockType.COMMAND,
                     arguments: {
                         BANK: {
                             type: ArgumentType.STRING,
@@ -662,7 +865,7 @@ class Scratch3Numberbank {
                                 default: 'card'
                             })
                         },
-                        NUM: {
+                        VAL: {
                             type: ArgumentType.NUMBER,
                             defaultValue: '10'
                         }
@@ -674,8 +877,8 @@ class Scratch3Numberbank {
                     blockType: BlockType.COMMAND,
                     text: formatMessage({
                         id: 'numberbank.setNum',
-                        default: 'set [VAL] to number of[CARD]of[BANK]',
-                        description: 'set number by Firebase'
+                        default: 'set [VAL] to [CARD]of[BANK]',
+                        description: 'set value by Firebase'
                     }),
                     arguments: {
                         BANK: {
@@ -706,8 +909,8 @@ class Scratch3Numberbank {
                     blockType: BlockType.COMMAND,
                     text: formatMessage({
                         id: 'numberbank.getNum',
-                        default: 'get number of[CARD]of[BANK]',
-                        description: 'get number from Firebase'
+                        default: 'get [CARD]of[BANK]',
+                        description: 'get value from Firebase'
                     }),
                     arguments: {
                         BANK: {
@@ -730,8 +933,8 @@ class Scratch3Numberbank {
                     opcode: 'repNum',
                     text: formatMessage({
                         id: 'numberbank.repNum',
-                        default: 'cloud number',
-                        description: 'report Number'
+                        default: 'cloud value',
+                        description: 'report value'
                     }),
                     blockType: BlockType.REPORTER
                 },
@@ -741,8 +944,8 @@ class Scratch3Numberbank {
                     blockType: BlockType.REPORTER,
                     text: formatMessage({
                         id: 'numberbank.repCloudNum',
-                        default: 'number of[CARD]of[BANK]',
-                        description: 'report Cloud number'
+                        default: 'value of [CARD]of[BANK]',
+                        description: 'report cloud value'
                     }),
                     arguments: {
                         BANK: {
@@ -768,7 +971,7 @@ class Scratch3Numberbank {
                     text: formatMessage({
                         id: 'numberbank.boolAvl',
                         default: '[CARD]of[BANK] available?',
-                        description: 'report Number'
+                        description: 'report value'
                     }),
                     arguments: {
                         BANK: {
@@ -794,7 +997,7 @@ class Scratch3Numberbank {
                     text: formatMessage({
                         id: 'numberbank.setMaster',
                         default: 'set Master[KEY]',
-                        description: 'readFirebase'
+                        description: 'initFirebase'
                     }),
                     arguments: {
                         KEY: {
@@ -806,12 +1009,56 @@ class Scratch3Numberbank {
                         }
                     }
 
-                }
+                },
+                '---',
+                {
+                    opcode: 'lisningNum',
+                    blockType: BlockType.COMMAND,
+                    text: formatMessage({
+                        id: 'numberbank.lisningNum',
+                        default: ' turn lisning [CARD]of[BANK] [LISNING_STATE]',
+                        description: 'lisning value by Firebase'
+                    }),
+                    arguments: {
+                        BANK: {
+                            type: ArgumentType.STRING,
+                            defaultValue: formatMessage({
+                                id: 'numberbank.argments.bank',
+                                default: 'bank'
+                            })
+                        },
+                        CARD: {
+                            type: ArgumentType.STRING,
+                            defaultValue: formatMessage({
+                                id: 'numberbank.argments.card',
+                                default: 'card'
+                            })
+                        },
+                        LISNING_STATE: {
+                            type: ArgumentType.STRING,
+                            menu: 'lisningMenu',
+                            defaultValue: Lisning.ON
+                        }
+                    }
+                },
+                {
+                    opcode: 'whenUpdated',
+                    blockType: BlockType.HAT,
+                    text: formatMessage({
+                        id: 'numberbank.whenUpdated',
+                        default: 'when updated',
+                        description: 'whenFirebaseUpdated'
+                    }),
+                },
             ],
             menus: {
                 valMenu: {
                     acceptReporters: true,
                     items: 'getDynamicMenuItems'
+                },
+                lisningMenu: {
+                    acceptReporters: true,
+                    items: this._buildMenu(this.LISNING_INFO)
                 }
             }
         };
@@ -832,26 +1079,34 @@ class Scratch3Numberbank {
                 'numberbank.argments.bank': 'バンク',
                 'numberbank.argments.card': 'カード',
                 'numberbank.argments.key': 'key',
-                'numberbank.putNum': '[BANK]の[CARD]の数字を[NUM]にする',
-                'numberbank.setNum': '[VAL]を[BANK]の[CARD]の数字にする',
+                'numberbank.putNum': '[BANK]の[CARD]を[VAL]にする',
+                'numberbank.setNum': '[VAL]を[BANK]の[CARD]にする',
                 'numberbank.getNum': '[BANK]の[CARD]を読む',
-                'numberbank.repNum': 'クラウド数字',
-                'numberbank.repCloudNum': '[BANK]の[CARD]の数字',
+                'numberbank.repNum': 'クラウドの値',
+                'numberbank.repCloudNum': '[BANK]の[CARD]の値',
                 'numberbank.boolAvl': '[BANK]の[CARD]がある',
-                'numberbank.setMaster': 'マスター[KEY]をセット'
+                'numberbank.setMaster': 'マスター[KEY]をセット',
+                'numberbank.lisningNum': '[BANK]の[CARD]の更新確認を[LISNING_STATE]にする',
+                'numberbank.whenUpdated': '更新されたとき',
+                'lisning.off': '切',
+                'lisning.on': '入'
             },
             'ja-Hira': {
                 'numberbank.NumberBank': 'なんばーばんく',
                 'numberbank.argments.bank': 'ばんく',
                 'numberbank.argments.card': 'かーど',
                 'numberbank.argments.key': 'key',
-                'numberbank.putNum': '[BANK]の[CARD]のすうじを[NUM]にする',
-                'numberbank.setNum': '[VAL]を[BANK]の[CARD]のすうじにする',
+                'numberbank.putNum': '[BANK]の[CARD]を[VAL]にする',
+                'numberbank.setNum': '[VAL]を[BANK]の[CARD]にする',
                 'numberbank.getNum': '[BANK]の[CARD]をよむ',
-                'numberbank.repNum': 'クラウドすうじ',
-                'numberbank.repCloudNum': '[BANK]の[CARD]のすうじ',
+                'numberbank.repNum': 'クラウドのあたい',
+                'numberbank.repCloudNum': '[BANK]の[CARD]のあたい',
                 'numberbank.boolAvl': '[BANK]の[CARD]がある',
-                'numberbank.setMaster': 'ますたー[KEY]をセット'
+                'numberbank.setMaster': 'ますたー[KEY]をセット',
+                'numberbank.lisningNum': '[BANK]の[CARD]のこうしんかくにんを[LISNING_STATE]にする',
+                'numberbank.whenUpdated': 'こうしんされたとき',
+                'lisning.off': 'きり',
+                'lisning.on': 'いり'
             }
         };
 
@@ -964,9 +1219,17 @@ var db;
 let apiCallQueue = [];
 let processing = false;
 
+//onSnapshot対象
+const Lisning = {
+    OFF: 'off',
+    ON: 'on',
+    BANK:'',
+    CARD:'',
+    UNI:'',
+    FIRST:false
+}
 
 // Variables
-let masterKey = '';
 let masterSetted = '';
 let bankName = '';
 let bankKey = '';
