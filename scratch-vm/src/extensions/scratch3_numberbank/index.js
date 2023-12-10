@@ -1,7 +1,7 @@
 /*
 
     NumberBank 2.0
-    20231210 - ver2.0(2001) 
+    20231210 - ver2.0(2002) 
     Scratch3.0 Extension
 
     Web:
@@ -138,7 +138,7 @@ class Scratch3Numberbank {
     putNum(args) {
         return new Promise((resolve, reject) => {
             if (masterSha256 == '') { resolve(); }
-            if (args.BANK == '' || args.CARD == '' || args.NUM == '') { resolve(); }
+            if (args.BANK == '' || args.CARD == '' || args.VAL == '') { resolve(); }
 
             bankKey = new String(args.BANK);
             bankName = args.BANK;
@@ -146,8 +146,8 @@ class Scratch3Numberbank {
 
             uniKey = bankKey.trim().concat(cardKey.trim());
 
-            if (args.NUM != '' && args.NUM != undefined) {
-                settingNum = args.NUM;
+            if (args.VAL != '' && args.VAL != undefined) {
+                settingNum = args.VAL;
             }
 
             if (!crypto || !crypto.subtle) {
@@ -1142,19 +1142,19 @@ function processQueue() {
   }
   
   
-  //
-  function enqueueApiCall(apiCall) {
-      return new Promise((resolve, reject) => {
+//
+function enqueueApiCall(apiCall) {
+    return new Promise((resolve, reject) => {
         apiCallQueue.push(() => apiCall().then(resolve).catch(reject));
         processQueue();
-      });
-  }
+    });
+}
   
   
-  function resetQueue() {
-      apiCallQueue = [];
-      processing = false;
-    }
+function resetQueue() {
+    apiCallQueue = [];
+    processing = false;
+}
 
     
 
@@ -1165,6 +1165,7 @@ function sleep(msec) {
         }, msec)
     );
 }
+
 
 function ioWaiter(msec) {
     return new Promise((resolve, reject) =>
@@ -1180,7 +1181,6 @@ function ioWaiter(msec) {
             return ioWaiter(msec);
         });
 }
-
 
 function ioSettingWaiter(msec) {
     return new Promise((resolve, reject) =>
