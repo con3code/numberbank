@@ -1,4 +1,4 @@
-# NumberBank - Store value to cloud for Scratch 3.0
+# NumberBank 2.0 - Store value to cloud for Scratch 3.0
 Scratch3.0からクラウドに値を保存できるクラウド連想配列を実現する拡張機能です。
 
 This is an extension that enables cloud associative arrays to save values from Scratch 3.0 projects to Firebase Cloud.
