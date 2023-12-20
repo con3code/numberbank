@@ -1,7 +1,7 @@
 /*
 
     NumberBank 2.0
-    20231220 - ver2.0(2007)
+    20231221 - ver2.0(2008)
     Scratch3.0 Extension
 
     Web:
@@ -13,7 +13,7 @@
 const BlockType = require('../../extension-support/block-type');
 const ArgumentType = require('../../extension-support/argument-type');
 const formatMessage = require('format-message');
-const {Crypto} = require("@peculiar/webcrypto");
+const {Crypto} = require('@peculiar/webcrypto');
 const crypto = new Crypto();
 
 const Variable = require('../../engine/variable');
@@ -26,8 +26,7 @@ const {initializeFirestore, doc, getDoc, setDoc, onSnapshot} = require('firebase
 const encoder = new TextEncoder();
 const decoderUtf8 = new TextDecoder('utf-8');
 
-const EXTENSION_ID = 'numberbank';
-const extVersion = 'NumberBank 2.0';
+const numberbankVersion = 'NumberBank 2.0(2008)';
 
 
 /**
@@ -44,6 +43,8 @@ const blockIconURI = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNv
 // eslint-disable-next-line max-len
 const menuIconURI = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPCFET0NUWVBFIHN2ZyBQVUJMSUMgIi0vL1czQy8vRFREIFNWRyAxLjEvL0VOIiAiaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkIj4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgIHhtbDpzcGFjZT0icHJlc2VydmUiIGlkPSJudW1iZXJiYW5rX2luc2V0Ij4KICAgIDwhLS0gR2VuZXJhdGVkIGJ5IFBhaW50Q29kZSAtIGh0dHA6Ly93d3cucGFpbnRjb2RlYXBwLmNvbSAtLT4KICAgIDxnIGlkPSJudW1iZXJiYW5rX2luc2V0LWdyb3VwIj4KICAgICAgICA8ZWxsaXBzZSBpZD0ibnVtYmVyYmFua19pbnNldC1vdmFsIiBzdHJva2U9Im5vbmUiIGZpbGw9InJnYigxMjgsIDEyOCwgMTI4KSIgY3g9IjIxLjUiIGN5PSI3MiIgcng9IjE1LjUiIHJ5PSIxNiIgLz4KICAgICAgICA8ZWxsaXBzZSBpZD0ibnVtYmVyYmFua19pbnNldC1vdmFsMiIgc3Ryb2tlPSJub25lIiBmaWxsPSJyZ2IoMTI4LCAxMjgsIDEyOCkiIGN4PSI0Ny4yNSIgY3k9IjYxLjUiIHJ4PSIyNi43NSIgcnk9IjI2LjUiIC8+CiAgICAgICAgPGVsbGlwc2UgaWQ9Im51bWJlcmJhbmtfaW5zZXQtb3ZhbDMiIHN0cm9rZT0ibm9uZSIgZmlsbD0icmdiKDEyOCwgMTI4LCAxMjgpIiBjeD0iNzYuMjUiIGN5PSI2MS41IiByeD0iMjEuNzUiIHJ5PSIyMS41IiAvPgogICAgPC9nPgogICAgPHBhdGggaWQ9Im51bWJlcmJhbmtfaW5zZXQtdGV4dCIgc3Ryb2tlPSJyZ2IoMjU1LCAyNTUsIDI1NSkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLW1pdGVybGltaXQ9IjEwIiBmaWxsPSJyZ2IoMCwgMCwgMCkiIGQ9Ik0gNDAuMjcsMTcuNyBMIDUzLjQ4LDQ5LjggNTMuNDgsMjcuNiBDIDUzLjQ4LDI0LjI1IDUyLjgzLDIyLjU4IDUxLjUyLDIyLjU4IDUxLjE3LDIyLjU4IDUwLjY2LDIyLjY2IDQ5Ljk5LDIyLjg0IDQ5LjMxLDIzLjAxIDQ4LjgsMjMuMSA0OC40NSwyMy4xIDQ3LjQsMjMuMSA0Ni41MSwyMi42MyA0NS43OSwyMS42OCA0NS4wNiwyMC43MiA0NC43LDE5LjU1IDQ0LjcsMTguMTUgNDQuNywxNi41IDQ1LjE3LDE1LjE4IDQ2LjEyLDE0LjE4IDQ3LjA4LDEzLjE3IDQ4LjMyLDEyLjY4IDQ5Ljg4LDEyLjY4IDUwLjY4LDEyLjY4IDUyLjA1LDEyLjggNTQsMTMuMDUgNTUuOTUsMTMuMyA1Ny42NywxMy40MyA1OS4xNywxMy40MyA2MC41MywxMy40MyA2Mi4xLDEzLjMzIDYzLjksMTMuMTIgNjYuNiwxMi44MiA2OC4yNywxMi42OCA2OC45MiwxMi42OCA3MC41MywxMi42OCA3MS44MiwxMy4xNyA3Mi44MiwxNC4xOCA3My44MywxNS4xOCA3NC4zMywxNi41IDc0LjMzLDE4LjE1IDc0LjMzLDE5LjU1IDczLjkzLDIwLjcyIDczLjEyLDIxLjY4IDcyLjMyLDIyLjYzIDcxLjM1LDIzLjEgNzAuMiwyMy4xIDY5Ljc1LDIzLjEgNjkuMTUsMjMuMDEgNjguNCwyMi44NCA2Ny42NSwyMi42NiA2Ny4wOCwyMi41OCA2Ni42NywyMi41OCA2NS42NywyMi41OCA2NS4wMywyMy4yIDY0LjcyLDI0LjQ1IDY0LjYyLDI0Ljk1IDY0LjU4LDI2IDY0LjU3LDI3LjYgTCA2NC41Nyw1OC4xMiBDIDY0LjU4LDYxLjQzIDYzLjIzLDYzLjA3IDYwLjUyLDYzLjA3IDYwLjAyLDYzLjA3IDU5LjI2LDYzLjA0IDU4LjI0LDYyLjk2IDU3LjIxLDYyLjg5IDU2LjQ1LDYyLjg1IDU1Ljk1LDYyLjg1IDU1LjksNjIuODUgNTQuNjgsNjIuOSA1Mi4yNyw2MyA1Mi4yNyw2MyA1MS43Myw2MyA1MC42Miw2MyA0OS4xNyw2MyA0OC4xLDYyLjY1IDQ3LjQsNjEuOTUgNDcsNjEuNTUgNDYuNDMsNjAuNDggNDUuNjcsNTguNzIgTCAzMS4yLDI1LjcyIDMxLjIsNDguMzggQyAzMS4yLDUxLjc4IDMxLjg1LDUzLjQ3IDMzLjE1LDUzLjQ3IDMzLjUsNTMuNDcgMzQuMDQsNTMuMzkgMzQuNzYsNTMuMjEgMzUuNDksNTMuMDQgMzYuMDIsNTIuOTUgMzYuMzgsNTIuOTUgMzcuNDMsNTIuOTUgMzguMzEsNTMuNDIgMzkuMDQsNTQuMzggMzkuNzYsNTUuMzMgNDAuMTIsNTYuNSA0MC4xMiw1Ny45IDQwLjEyLDYxLjU1IDM4LjM4LDYzLjM4IDM0Ljg4LDYzLjM4IDMzLjg3LDYzLjM4IDMyLjIzLDYzLjIzIDI5LjkzLDYyLjkzIDI4LjM3LDYyLjcyIDI2LjgzLDYyLjYyIDI1LjI3LDYyLjYyIDIzLjk3LDYyLjYyIDIyLjIzLDYyLjc1IDIwLjAyLDYzIDE3LjgyLDYzLjI1IDE2LjQzLDYzLjM4IDE1LjgyLDYzLjM4IDEyLjE3LDYzLjM4IDEwLjM1LDYxLjU1IDEwLjM1LDU3LjkgMTAuMzUsNTYuNSAxMC43NCw1NS4zMyAxMS41MSw1NC4zOCAxMi4yOSw1My40MiAxMy4yNSw1Mi45NSAxNC40LDUyLjk1IDE0Ljg1LDUyLjk1IDE1LjQ2LDUzLjA0IDE2LjI0LDUzLjIxIDE3LjAxLDUzLjM5IDE3LjYsNTMuNDcgMTgsNTMuNDcgMTkuMzUsNTMuNDcgMjAuMDIsNTEuNzggMjAuMDIsNDguMzggTCAyMC4wMiwyNy42IEMgMjAuMDIsMjQuMjUgMTkuMzUsMjIuNTggMTgsMjIuNTggMTcuNiwyMi41OCAxNy4wMSwyMi42NiAxNi4yNCwyMi44NCAxNS40NiwyMy4wMSAxNC44NSwyMy4xIDE0LjQsMjMuMSAxMy4yNSwyMy4xIDEyLjI5LDIyLjYzIDExLjUxLDIxLjY4IDEwLjc0LDIwLjcyIDEwLjM1LDE5LjU1IDEwLjM1LDE4LjE1IDEwLjM1LDE2LjUgMTAuODUsMTUuMTggMTEuODUsMTQuMTggMTIuODUsMTMuMTcgMTQuMTUsMTIuNjggMTUuNzUsMTIuNjggMTYuOCwxMi42OCAxOC4zMiwxMi44IDIwLjMyLDEzLjA1IDIyLjMzLDEzLjMgMjMuOSwxMy40MyAyNS4wNSwxMy40MyAyNiwxMy40MyAyNy42MiwxMy4zMyAyOS45MywxMy4xMiAzMC45OCwxMy4wNyAzMi4xNywxMi45OCAzMy41MiwxMi44MyAzNC4xMywxMi43MiAzNC43NywxMi42OCAzNS40NywxMi42OCAzNi44MywxMi42OCAzNy44NywxMy4yIDM4LjYyLDE0LjI1IDM4LjkzLDE0LjY1IDM5LjQ3LDE1LjggNDAuMjcsMTcuNyBaIE0gNDAuMjcsMTcuNyIgLz4KPC9zdmc+Cg==';
 
+
+const EXTENSION_ID = 'numberbank';
 
 
 /**
@@ -107,7 +108,7 @@ class Scratch3Numberbank {
         //onSnapshot
         this.unsubscribe = () => {};
 
-        console.log(extVersion);
+        console.log(numberbankVersion);
 
         if (runtime.formatMessage) {
             // Replace 'formatMessage' to a formatter which is used in the runtime.
@@ -177,25 +178,20 @@ class Scratch3Numberbank {
                             const cardDocRef = doc(db, 'card', uniSha256);
                             const bankDocRef = doc(db, 'bank', bankSha256);
 
-                            enqueueApiCall(() => {
-                                return setDoc(cardDocRef, {
-                                    number: settingNum,
-                                    bank_key: bankSha256,
-                                    card_key: cardSha256,
-                                    master_key: masterSha256,
-                                    time_stamp: now
-                                })
-                                .then(() => {
-                                    return setDoc(bankDocRef, {
-                                        bank_name: bankName,
-                                        time_stamp: now
-                                    });
-                                })
+                            enqueueApiCall(() => setDoc(cardDocRef, {
+                                number: settingNum,
+                                bank_key: bankSha256,
+                                card_key: cardSha256,
+                                master_key: masterSha256,
+                                time_stamp: now
+                            })
+                                .then(() => setDoc(bankDocRef, {
+                                    bank_name: bankName,
+                                    time_stamp: now}))
                                 .catch(error => {
                                     console.error("Error writing document: ", error);
                                     reject();
-                                });
-                            });
+                                }));
                             
                             resolve();
 
@@ -203,20 +199,19 @@ class Scratch3Numberbank {
                             console.log("No MasterKey!");
                             resolve();  // MasterKeyがない場合
                         }
-                    }).catch(error => {
+                    })
+                    .catch(error => {
                         console.error("Error: ", error);
                         reject(error);
                     });
             } else {
                 resolve();
             }
-        }).then(() => {
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    resolve();
-                }, interval.MsPut);
-            });
-        });
+        }).then(() => new Promise(resolve => {
+            setTimeout(() => {
+                resolve();
+            }, interval.MsPut);
+        }));
         
     }
 
@@ -257,23 +252,21 @@ class Scratch3Numberbank {
                     })
                     .then(() => {
                         if (masterSha256 != '' && masterSha256 != undefined) {
-                            enqueueApiCall(() => {
-                                return getDoc(doc(db, 'card', uniSha256))
-                                    .then(docSnapshot => {
-                                        if (docSnapshot.exists()) {
-                                            let data = docSnapshot.data();
-                                            variable.value = data.number;
-                                            resolve();
-                                        } else {
-                                            variable.value = '';
-                                            resolve();
-                                        }
-                                    })
-                                    .catch(error => {
-                                        console.error("Error getting document: ", error);
-                                        reject();
-                                    })
-                            });
+                            enqueueApiCall(() => getDoc(doc(db, 'card', uniSha256))
+                                .then(docSnapshot => {
+                                    if (docSnapshot.exists()) {
+                                        let data = docSnapshot.data();
+                                        variable.value = data.number;
+                                        resolve();
+                                    } else {
+                                        variable.value = '';
+                                        resolve();
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error("Error getting document: ", error);
+                                    reject();
+                                }));
                             
                             resolve();
 
@@ -288,13 +281,11 @@ class Scratch3Numberbank {
             } else {
                 resolve();
             }
-        }).then(() => {
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    resolve();
-                }, interval.MsSet);
-            });
-        });
+        }).then(() => new Promise(resolve => {
+            setTimeout(() => {
+                resolve();
+            }, interval.MsSet);
+        }));
 
     }
 
@@ -335,23 +326,21 @@ class Scratch3Numberbank {
                     })
                     .then(() => {
                         if (masterSha256 != '' && masterSha256 != undefined) {
-                            enqueueApiCall(() => {
-                                return getDoc(doc(db, 'card', uniSha256))
-                                    .then(docSnapshot => {
-                                        if (docSnapshot.exists()) {
-                                            let data = docSnapshot.data();
-                                            cloudNum = data.number;
-                                            resolve(cloudNum);
-                                        } else {
-                                            cloudNum = '';
-                                            resolve(cloudNum);
-                                        }
-                                    })
-                                    .catch(error => {
-                                        console.error("Error getting document: ", error);
-                                        reject(error);
-                                    })
-                            });
+                            enqueueApiCall(() => getDoc(doc(db, 'card', uniSha256))
+                                .then(docSnapshot => {
+                                    if (docSnapshot.exists()) {
+                                        let data = docSnapshot.data();
+                                        cloudNum = data.number;
+                                        resolve(cloudNum);
+                                    } else {
+                                        cloudNum = '';
+                                        resolve(cloudNum);
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error("Error getting document: ", error);
+                                    reject(error);
+                                }));
 
                         } else {
                             console.log("No MasterKey!");
@@ -364,14 +353,11 @@ class Scratch3Numberbank {
             } else {
                 resolve('');
             }
-        }).then((ret) => {
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    resolve(ret);
-                }, interval.MsGet);
-            });
-        });
-
+        }).then(ret => new Promise(resolve => {
+            setTimeout(() => {
+                resolve(ret);
+            }, interval.MsGet);
+        }));
     }
 
 
@@ -416,23 +402,21 @@ class Scratch3Numberbank {
                     })
                     .then(() => {
                         if (masterSha256 != '' && masterSha256 != undefined) {
-                            enqueueApiCall(() => {
-                                return getDoc(doc(db, 'card', uniSha256))
-                                    .then(docSnapshot => {
-                                        if (docSnapshot.exists()) {
-                                            let data = docSnapshot.data();
-                                            rep_cloudNum = data.number;
-                                            resolve(rep_cloudNum);
-                                        } else {
-                                            rep_cloudNum = '';
-                                            resolve(rep_cloudNum);
-                                        }
-                                    })
-                                    .catch(error => {
-                                        console.error("Error getting document: ", error);
-                                        reject(error);
-                                    })
-                            });
+                            enqueueApiCall(() => getDoc(doc(db, 'card', uniSha256))
+                                .then(docSnapshot => {
+                                    if (docSnapshot.exists()) {
+                                        let data = docSnapshot.data();
+                                        rep_cloudNum = data.number;
+                                        resolve(rep_cloudNum);
+                                    } else {
+                                        rep_cloudNum = '';
+                                        resolve(rep_cloudNum);
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error("Error getting document: ", error);
+                                    reject(error);
+                                }));
 
                         } else {
                             console.log("No MasterKey!");
@@ -446,13 +430,11 @@ class Scratch3Numberbank {
             } else {
                 resolve('');  // bankKeyがない場合
             }
-        }).then((ret) => {
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    resolve(ret);
-                }, interval.MsRep);
-            });
-        });
+        }).then(ret => new Promise(resolve => {
+            setTimeout(() => {
+                resolve(ret);
+            }, interval.MsRep);
+        }));
 
     }
 
@@ -481,21 +463,19 @@ class Scratch3Numberbank {
                 })
                 .then(() => {
                     if (masterSha256 != '' && masterSha256 != undefined) {
-                        enqueueApiCall(() => {
-                            return getDoc(doc(db, 'card', uniSha256))
-                                .then(ckey => {
-                                    if (ckey.exists()) {
-                                        resolve(true);
-                                    } else {
-                                        resolve(false);
-                                    }
-                                })
-                                .catch(error => {
-                                    console.log("Error checking document:", error);
-                                    reject(error);
-                                })
-                        });
-                        
+                        enqueueApiCall(() => getDoc(doc(db, 'card', uniSha256))
+                        .then(ckey => {
+                            if (ckey.exists()) {
+                                resolve(true);
+                            } else {
+                                resolve(false);
+                            }
+                        })
+                        .catch(error => {
+                            console.log("Error checking document:", error);
+                            reject(error);
+                        }));
+                
                     } else {
                         console.log("No MasterKey!");
                         reject('');  // MasterKeyがない場合
@@ -507,13 +487,11 @@ class Scratch3Numberbank {
             } else {
                 resolve('');
             }
-        }).then((ret) => {
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    resolve(ret);
-                }, interval.MsAvl);
-            });
-        });
+        }).then(ret => new Promise(resolve => {
+            setTimeout(() => {
+                resolve(ret);
+            }, interval.MsAvl);
+        }));
 
     }
 
@@ -540,110 +518,108 @@ class Scratch3Numberbank {
                 .then(masterStr => {
                     masterSha256 = hexString(masterStr);
     
-                    enqueueApiCall(() => fetch(mkbRequest).then(response => {
-                        if (response.ok) {
-                            return response.json();
-                        } else {
-                            throw new Error('Unexpected responce status ${response.status} or content type');
-                        }
-                        
-                    }).then((resBody) => {
-        
-                        cloudConfig_mkey.masterKey = resBody.masterKey;
-                        cloudConfig_mkey.cloudType = resBody.cloudType;
-                        cloudConfig_mkey.apiKey = resBody.apiKey;
-                        cloudConfig_mkey.authDomain = resBody.authDomain;
-                        cloudConfig_mkey.databaseURL = resBody.databaseURL;
-                        cloudConfig_mkey.projectId = resBody.projectId;
-                        cloudConfig_mkey.storageBucket = resBody.storageBucket;
-                        cloudConfig_mkey.messagingSenderId = resBody.messagingSenderId;
-                        cloudConfig_mkey.appId = resBody.appId;
-                        cloudConfig_mkey.measurementId = resBody.measurementId;
-                        cloudConfig_mkey.cccCheck = resBody.cccCheck;
-                        interval.MsPut = resBody.intervalMsPut;
-                        interval.MsSet = resBody.intervalMsSet;
-                        interval.MsGet = resBody.intervalMsGet;
-                        interval.MsRep = resBody.intervalMsRep;
-                        interval.MsAvl = resBody.intervalMsAvl;
-        
-        
-                        inoutFlag = false;
-                        crypt_decode(cloudConfig_mkey, firebaseConfig);
-                        return ioWaiter(1);
-        
-                    }).then(() => {
-                        inoutFlag = true;
-        
-                        // Initialize Firebase
-                        try {
-                            if(!getApps().length){ //V9
-                            //if (!firebase.apps.length) {
-                                        
-                                fbApp = initializeApp(firebaseConfig, masterSetted); //V9
-                                //db = initializeFirestore(fbApp, {localCache: PersistentLocalCache});
-                                db = initializeFirestore(fbApp, {});
-
-                                inoutFlag_setting = false;
-                                inoutFlag = false;
-            
+                    enqueueApiCall(() => fetch(mkbRequest)
+                        .then(response => {
+                            if (response.ok) {
+                                return response.json();
                             } else {
+                                throw new Error('Unexpected responce status ${response.status} or content type');
+                            }
+                        
+                        }).then((resBody) => {
             
-                                deleteApp(fbApp)
-                                .then(() => {
-
-                                    fbApp = initializeApp(firebaseConfig, masterSetted); //V9
-                                    //db = initializeFirestore(fbApp, {localCache: PersistentLocalCache}); 
+                            cloudConfig_mkey.masterKey = resBody.masterKey;
+                            cloudConfig_mkey.cloudType = resBody.cloudType;
+                            cloudConfig_mkey.apiKey = resBody.apiKey;
+                            cloudConfig_mkey.authDomain = resBody.authDomain;
+                            cloudConfig_mkey.databaseURL = resBody.databaseURL;
+                            cloudConfig_mkey.projectId = resBody.projectId;
+                            cloudConfig_mkey.storageBucket = resBody.storageBucket;
+                            cloudConfig_mkey.messagingSenderId = resBody.messagingSenderId;
+                            cloudConfig_mkey.appId = resBody.appId;
+                            cloudConfig_mkey.measurementId = resBody.measurementId;
+                            cloudConfig_mkey.cccCheck = resBody.cccCheck;
+                            interval.MsPut = resBody.intervalMsPut;
+                            interval.MsSet = resBody.intervalMsSet;
+                            interval.MsGet = resBody.intervalMsGet;
+                            interval.MsRep = resBody.intervalMsRep;
+                            interval.MsAvl = resBody.intervalMsAvl;
+            
+            
+                            inoutFlag = false;
+                            crypt_decode(cloudConfig_mkey, firebaseConfig);
+                            return ioWaiter(1);
+            
+                        })
+                        .then(() => {
+                            inoutFlag = true;
+            
+                            // Initialize Firebase
+                            try {
+                                if (!getApps().length){ // V9
+                                    // if (!firebase.apps.length) {
+                
+                                    fbApp = initializeApp(firebaseConfig, masterSetted); // V9
+                                    // db = initializeFirestore(fbApp, {localCache: PersistentLocalCache});
                                     db = initializeFirestore(fbApp, {});
 
                                     inoutFlag_setting = false;
-                                })
-                                .catch((error) => {
-                                    console.log('Error deleting fbApp:', error);
-                                    inoutFlag_setting = false;
-                                })
-
-                                inoutFlag = false;
-
-                            }
-
-                        } catch (error) {
-                            console.log('Error initializing or deleting fbApp:', error);
-                            inoutFlag = false;
-                            inoutFlag_setting = false;
-                            reject();
-                        }
+                                    inoutFlag = false;
             
-                        return sleep(1);
-        
-                    }).then(() => {
-                        ResponseMaster = masterKey = masterSetted;
-                        console.log("= MasterKey:", masterSetted);
-                        console.log('= Interval:', interval);
-                        console.log("= MasterKey Accepted =");
+                                } else {
+            
+                                    deleteApp(fbApp)
+                                        .then(() => {
 
-                        resolve(ResponseMaster);
-        
-                    })
-                    .catch((error) => {
-                        ResponseMaster = 'No masterkey';  // MasterKeyがマッチしない場合
-                        console.log("= No such MasterKey =");
-                        inoutFlag_setting = false;
-                        resolve(ResponseMaster);
-                    }));
+                                            fbApp = initializeApp(firebaseConfig, masterSetted); // V9
+                                            // db = initializeFirestore(fbApp, {localCache: PersistentLocalCache});
+                                            db = initializeFirestore(fbApp, {});
+
+                                            inoutFlag_setting = false;
+                                        })
+                                        .catch(error => {
+                                            console.error('Error deleting fbApp:', error);
+                                            inoutFlag_setting = false;
+                                        });
+
+                                    inoutFlag = false;
+
+                                }
+
+                            } catch (error) {
+                                console.error('Error initializing or deleting fbApp:', error);
+                                inoutFlag = false;
+                                inoutFlag_setting = false;
+                                reject();
+                            }
+            
+                            return sleep(1);
+            
+                        }).then(() => {
+                            ResponseMaster = masterKey = masterSetted;
+                            console.log("= MasterKey:", masterSetted);
+                            console.log('= Interval:', interval);
+                            console.log("= MasterKey Accepted =");
+
+                            resolve(ResponseMaster);
+            
+                        })
+                        .catch((error) => {
+                            ResponseMaster = 'No masterkey';  // MasterKeyがマッチしない場合
+                            console.log("= No such MasterKey =");
+                            inoutFlag_setting = false;
+                            resolve(ResponseMaster);
+                        }),
+                    );
 
                 })
-                .catch((error) => {
-                        console.log('Erorr:', error);
-                        reject(error);
+                .catch(error => {
+                    console.log('Erorr:', error);
+                    reject(error);
                 });
-
         })
-        .then(() => {
-            return ioSettingWaiter(1);
-        })
-        .then(() => {
-            return ResponseMaster;
-        });
+        .then(() => ioSettingWaiter(1))
+        .then(() => ResponseMaster);
 
     }
 
@@ -1143,39 +1119,41 @@ class Scratch3Numberbank {
 //
 function processQueue() {
     if (processing || apiCallQueue.length === 0) {
-      return;
+        return;
     }
     processing = true;
     const apiCall = apiCallQueue.shift();
   
     apiCall().then(() => {
-      processing = false;
-      processQueue();
-    }).catch(error => {
-      console.error(error);
-      processing = false;
-      processQueue();
-    });
-  }
-  
-  
-//
-function enqueueApiCall(apiCall) {
-    return new Promise((resolve, reject) => {
-        apiCallQueue.push(() => apiCall().then(resolve).catch(reject));
+        processing = false;
+        processQueue();
+    })
+    .catch(error => {
+        console.error(error);
+        processing = false;
         processQueue();
     });
 }
   
   
-function resetQueue() {
+//
+function enqueueApiCall (apiCall) {
+    return new Promise((resolve, reject) => {
+        apiCallQueue.push(() => apiCall().then(resolve)
+            .catch(reject));
+        processQueue();
+    });
+}
+  
+  
+function resetQueue () {
     apiCallQueue = [];
     processing = false;
 }
 
     
 
-function sleep(msec) {
+function sleep (msec) {
     return new Promise(resolve =>
         setTimeout(() => {
             resolve();
@@ -1184,7 +1162,7 @@ function sleep(msec) {
 }
 
 
-function ioWaiter(msec) {
+function ioWaiter (msec) {
     return new Promise((resolve, reject) =>
         setTimeout(() => {
             if (inoutFlag) {
@@ -1194,12 +1172,10 @@ function ioWaiter(msec) {
             }
         }, msec)
     )
-        .catch(() => {
-            return ioWaiter(msec);
-        });
+    .catch(() => ioWaiter(msec));
 }
 
-function ioSettingWaiter(msec) {
+function ioSettingWaiter (msec) {
     return new Promise((resolve, reject) =>
         setTimeout(() => {
             if (inoutFlag_setting) {
@@ -1209,14 +1185,12 @@ function ioSettingWaiter(msec) {
             }
         }, msec)
     )
-        .catch(() => {
-            return ioSettingWaiter(msec);
-        });
+    .catch(() => ioSettingWaiter(msec));
 }
 
 
 //
-function hexString(textStr) {
+function hexString (textStr) {
     const byteArray = new Uint8Array(textStr);
     const hexCodes = [...byteArray].map(value => {
         const hexCode = value.toString(16);
