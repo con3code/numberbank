@@ -1,7 +1,7 @@
 /*
 
     NumberBank 2.0
-    20231220 - ver2.0(2006)
+    20231220 - ver2.0(2007)
     Scratch3.0 Extension
 
     Web:
@@ -1092,7 +1092,7 @@ class Scratch3Numberbank {
                 'lisning.on': 'on'
             },
             'ja': {
-                'numberbank.name': 'ナンバーバンク',
+                'numberbank.name': 'NumberBank',
                 'numberbank.argments.bank': 'バンク',
                 'numberbank.argments.card': 'カード',
                 'numberbank.argments.key': 'key',
