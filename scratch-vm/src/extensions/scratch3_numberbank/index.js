@@ -1,7 +1,7 @@
 /*
 
     NumberBank 2.0
-    20231221 - ver2.0(2008)
+    20231221 - ver2.0(2009)
     Scratch3.0 Extension
 
     Web:
@@ -810,7 +810,7 @@ class Scratch3Numberbank {
         this.setupTranslations();
 
         return {
-            id: 'numberbank',
+            id: Scratch3Numberbank.EXTENSION_ID,
             name: 'NumberBank',
             menuIconURI: menuIconURI,
             blockIconURI: blockIconURI,
@@ -1050,7 +1050,7 @@ class Scratch3Numberbank {
     setupTranslations() {
         const localeSetup = formatMessage.setup();
         const extensionTranslations = {
-            "en": {
+            'en': {
                 'numberbank.name': 'NumberBank',
                 'numberbank.argments.bank': 'bank',
                 'numberbank.argments.card': 'card',
