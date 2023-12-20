@@ -1,7 +1,7 @@
 /*
 
     NumberBank 2.0
-    20231220 - ver2.0(2005) 
+    20231220 - ver2.0(2006)
     Scratch3.0 Extension
 
     Web:
@@ -60,7 +60,7 @@ class Scratch3Numberbank {
             id: 'numberbank.name',
             default: 'NumberBank',
             description: 'name of the extension'
-        });
+        }).toString();
     }
 
     /**
@@ -1016,7 +1016,7 @@ class Scratch3Numberbank {
                     blockType: BlockType.COMMAND,
                     text: formatMessage({
                         id: 'numberbank.lisningNum',
-                        default: ' turn lisning [CARD]of[BANK] [LISNING_STATE]',
+                        default: 'turn lisning [CARD]of[BANK] [LISNING_STATE]',
                         description: 'lisning value by Firebase'
                     }),
                     arguments: {
@@ -1074,7 +1074,25 @@ class Scratch3Numberbank {
     setupTranslations() {
         const localeSetup = formatMessage.setup();
         const extensionTranslations = {
+            "en": {
+                'numberbank.name': 'NumberBank',
+                'numberbank.argments.bank': 'bank',
+                'numberbank.argments.card': 'card',
+                'numberbank.argments.key': 'key',
+                'numberbank.putNum': 'put [VAL] to [CARD]of[BANK]',
+                'numberbank.setNum': 'set [VAR] to [CARD]of[BANK]',
+                'numberbank.getNum': 'get [CARD]of[BANK]',
+                'numberbank.repNum': 'cloud value',
+                'numberbank.repCloudNum': 'value of [CARD]of[BANK]',
+                'numberbank.boolAvl': '[CARD]of[BANK] available?',
+                'numberbank.setMaster': 'set Master[KEY]',
+                'numberbank.lisningNum': 'turn lisning value of[CARD]of[BANK] [LISNING_STATE]',
+                'numberbank.whenUpdated': 'when updated',
+                'lisning.off': 'off',
+                'lisning.on': 'on'
+            },
             'ja': {
+                'numberbank.name': 'ナンバーバンク',
                 'numberbank.argments.bank': 'バンク',
                 'numberbank.argments.card': 'カード',
                 'numberbank.argments.key': 'key',
@@ -1091,6 +1109,7 @@ class Scratch3Numberbank {
                 'lisning.on': '入'
             },
             'ja-Hira': {
+                'numberbank.name': 'なんばーばんく',
                 'numberbank.argments.bank': 'ばんく',
                 'numberbank.argments.card': 'かーど',
                 'numberbank.argments.key': 'key',
@@ -1367,5 +1386,4 @@ function crypt_decode(cryptedConfigData, decodedConfigData) {
 }
 
 
-exports.blockClass = Scratch3Numberbank;
 module.exports = Scratch3Numberbank;
