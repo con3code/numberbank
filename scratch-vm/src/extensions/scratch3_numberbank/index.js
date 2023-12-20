@@ -26,7 +26,7 @@ const {initializeFirestore, doc, getDoc, setDoc, onSnapshot} = require('firebase
 const encoder = new TextEncoder();
 const decoderUtf8 = new TextDecoder('utf-8');
 
-const numberbankVersion = 'NumberBank 2.0(2008)';
+const numberbankVersion = 'NumberBank 2.0(2009)';
 
 
 /**
@@ -50,7 +50,7 @@ const EXTENSION_ID = 'numberbank';
 /**
  * Scratch 3.0 blocks
  */
-class Scratch3Numberbank {
+class Scratch3NumberbankBlocks {
 
 
     /**
@@ -810,8 +810,8 @@ class Scratch3Numberbank {
         this.setupTranslations();
 
         return {
-            id: Scratch3Numberbank.EXTENSION_ID,
-            name: 'NumberBank',
+            id: Scratch3NumberbankBlocks.EXTENSION_ID,
+            name: Scratch3NumberbankBlocks.EXTENSION_NAME, // 'NumberBank',
             menuIconURI: menuIconURI,
             blockIconURI: blockIconURI,
             showStatusButton: false,
@@ -1360,4 +1360,4 @@ function crypt_decode(cryptedConfigData, decodedConfigData) {
 }
 
 
-module.exports = Scratch3Numberbank;
+module.exports = Scratch3NumberbankBlocks;
