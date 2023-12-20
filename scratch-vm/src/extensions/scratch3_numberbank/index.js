@@ -1,7 +1,7 @@
 /*
 
     NumberBank 2.0
-    20231219 - ver2.0(2003) 
+    20231220 - ver2.0(2004) 
     Scratch3.0 Extension
 
     Web:
@@ -877,8 +877,8 @@ class Scratch3Numberbank {
                     blockType: BlockType.COMMAND,
                     text: formatMessage({
                         id: 'numberbank.setNum',
-                        default: 'set [VAL] to [CARD]of[BANK]',
-                        description: 'set value by Firebase'
+                        default: 'set [VAR] to [CARD]of[BANK]',
+                        description: 'set variable by Firebase'
                     }),
                     arguments: {
                         BANK: {
@@ -895,11 +895,11 @@ class Scratch3Numberbank {
                                 default: 'card'
                             })
                         },
-                        VAL: {
+                        VAR: {
                             type: ArgumentType.STRING,
                             fieldName: 'VARIABLE',
                             variableType: Variable.SCALAR_TYPE,
-                            menu: 'valMenu'
+                            menu: 'varMenu'
                         }
                     }
                 },
@@ -1052,7 +1052,7 @@ class Scratch3Numberbank {
                 },
             ],
             menus: {
-                valMenu: {
+                varMenu: {
                     acceptReporters: true,
                     items: 'getDynamicMenuItems'
                 },
@@ -1075,12 +1075,11 @@ class Scratch3Numberbank {
         const localeSetup = formatMessage.setup();
         const extensionTranslations = {
             'ja': {
-                'numberbank.NumberBank': 'ナンバーバンク',
                 'numberbank.argments.bank': 'バンク',
                 'numberbank.argments.card': 'カード',
                 'numberbank.argments.key': 'key',
                 'numberbank.putNum': '[BANK]の[CARD]を[VAL]にする',
-                'numberbank.setNum': '[VAL]を[BANK]の[CARD]にする',
+                'numberbank.setNum': '[VAR]を[BANK]の[CARD]にする',
                 'numberbank.getNum': '[BANK]の[CARD]を読む',
                 'numberbank.repNum': 'クラウドの値',
                 'numberbank.repCloudNum': '[BANK]の[CARD]の値',
@@ -1092,12 +1091,11 @@ class Scratch3Numberbank {
                 'lisning.on': '入'
             },
             'ja-Hira': {
-                'numberbank.NumberBank': 'なんばーばんく',
                 'numberbank.argments.bank': 'ばんく',
                 'numberbank.argments.card': 'かーど',
                 'numberbank.argments.key': 'key',
                 'numberbank.putNum': '[BANK]の[CARD]を[VAL]にする',
-                'numberbank.setNum': '[VAL]を[BANK]の[CARD]にする',
+                'numberbank.setNum': '[VAR]を[BANK]の[CARD]にする',
                 'numberbank.getNum': '[BANK]の[CARD]をよむ',
                 'numberbank.repNum': 'クラウドのあたい',
                 'numberbank.repCloudNum': '[BANK]の[CARD]のあたい',
