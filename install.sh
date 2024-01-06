@@ -22,9 +22,9 @@ mv src/lib/libraries/extensions/index.jsx src/lib/libraries/extensions/index.jsx
 DESCRIPTION="\
     {${LF}\
         name: (${LF}\
-            <FormattedMessage
+            <FormattedMessage${LF}\
                 defaultMessage='${EXTENSION_NAME}',${LF}\
-                description='${EXTENSION_NAME}',${LF}\
+                description='${EXTENSION_DESCRIPTION}',${LF}\
                 id='gui.extension.${EXTENSION_ID}blocks.name'${LF}\
             />${LF}\
         ),${LF}\
