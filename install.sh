@@ -23,8 +23,8 @@ DESCRIPTION="\
     {${LF}\
         name: (${LF}\
             <FormattedMessage${LF}\
-                defaultMessage='${EXTENSION_NAME}',${LF}\
-                description='${EXTENSION_DESCRIPTION}',${LF}\
+                defaultMessage='${EXTENSION_NAME}'${LF}\
+                description='${EXTENSION_DESCRIPTION}'${LF}\
                 id='gui.extension.${EXTENSION_ID}blocks.name'${LF}\
             />${LF}\
         ),${LF}\
