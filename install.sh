@@ -24,7 +24,7 @@ DESCRIPTION="\
         name: (${LF}\
             <FormattedMessage${LF}\
                 defaultMessage='${EXTENSION_NAME}'${LF}\
-                description='${EXTENSION_DESCRIPTION}'${LF}\
+                description='Name of the extension'${LF}\
                 id='gui.extension.${EXTENSION_ID}blocks.name'${LF}\
             />${LF}\
         ),${LF}\
@@ -35,7 +35,7 @@ DESCRIPTION="\
         description: (${LF}\
             <FormattedMessage${LF}\
                 defaultMessage='${EXTENSION_DESCRIPTION}'${LF}\
-                description='${EXTENSION_DESCRIPTION}'${LF}\
+                description='Description of the extension'${LF}\
                 id='gui.extension.${EXTENSION_ID}blocks.description'${LF}\
             />${LF}\
         ),${LF}\
