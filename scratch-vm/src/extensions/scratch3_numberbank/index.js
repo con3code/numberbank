@@ -596,7 +596,7 @@ class Scratch3NumberbankBlocks {
                             return sleep(1);
             
                         }).then(() => {
-                            ResponseMaster = masterKey = masterSetted;
+                            let ResponseMaster = masterKey = masterSetted;
                             console.log("= MasterKey:", masterSetted);
                             console.log('= Interval:', interval);
                             console.log("= MasterKey Accepted =");
@@ -605,7 +605,7 @@ class Scratch3NumberbankBlocks {
             
                         })
                         .catch((error) => {
-                            ResponseMaster = 'No masterkey';  // MasterKeyがマッチしない場合
+                            let ResponseMaster = 'No masterkey';  // MasterKeyがマッチしない場合
                             console.log("= No such MasterKey =");
                             inoutFlag_setting = false;
                             resolve(ResponseMaster);
@@ -619,7 +619,10 @@ class Scratch3NumberbankBlocks {
                 });
         })
         .then(() => ioSettingWaiter(1))
-        .then(() => ResponseMaster);
+        .then(() => {
+            let ResponseMaster;
+            resolve(ResponseMaster);
+        });
 
     }
 
