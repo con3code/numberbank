@@ -9,6 +9,7 @@ EXTENSION_DESCRIPTION="Store value to cloud."
 
 npm install firebase@10.7.1 --legacy-peer-deps
 npm install @peculiar/webcrypto --legacy-peer-deps
+npm install crypto-browserify
 
 mkdir -p node_modules/scratch-vm/src/extensions/scratch3_${EXTENSION_ID}
 cp ${EXTENSION_ID}/scratch-vm/src/extensions/scratch3_${EXTENSION_ID}/index.js node_modules/scratch-vm/src/extensions/scratch3_${EXTENSION_ID}/
@@ -53,3 +54,10 @@ DESCRIPTION="\
         }${LF}\
     },"
 sed -e "s|^export default \[$|import ${EXTENSION_ID}IconURL from './${EXTENSION_ID}/${EXTENSION_ID}_entry.png';${LF}import ${EXTENSION_ID}InsetIconURL from './${EXTENSION_ID}/${EXTENSION_ID}_inset.png';${LF}${LF}export default [${LF}${DESCRIPTION}|g" src/lib/libraries/extensions/index.jsx_orig > src/lib/libraries/extensions/index.jsx
+
+mv webpack.config.js webpack.config.js_orig
+CRYPTO_BROWSERIFY_FALLBACK="\
+fallback: {${LF}\
+                crypto: require.resolve('crypto-browserify'),\
+"
+sed -e "s|fallback: {|${CRYPTO_BROWSERIFY_FALLBACK}|g" webpack.config.js_orig > webpack.config.js
