@@ -13,8 +13,9 @@
 const BlockType = require('../../extension-support/block-type');
 const ArgumentType = require('../../extension-support/argument-type');
 const formatMessage = require('format-message');
-const {Crypto} = require('@peculiar/webcrypto');
-const crypto = new Crypto();
+// ブラウザ標準の Web Crypto API を使う (SHA-256 の digest にのみ使用)
+const crypto = (typeof globalThis !== 'undefined' && globalThis.crypto) ||
+    (typeof window !== 'undefined' && window.crypto);
 
 const Variable = require('../../engine/variable');
 
