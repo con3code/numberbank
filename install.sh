@@ -8,8 +8,6 @@ EXTENSION_NAME='NumberBank 2.0'
 EXTENSION_DESCRIPTION="Store value to cloud."
 
 npm install firebase@10.7.1 --legacy-peer-deps
-npm install @peculiar/webcrypto --legacy-peer-deps
-npm install crypto-browserify
 
 mkdir -p node_modules/scratch-vm/src/extensions/scratch3_${EXTENSION_ID}
 cp ${EXTENSION_ID}/scratch-vm/src/extensions/scratch3_${EXTENSION_ID}/index.js node_modules/scratch-vm/src/extensions/scratch3_${EXTENSION_ID}/
